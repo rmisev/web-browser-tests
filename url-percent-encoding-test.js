@@ -1,6 +1,7 @@
 // code points to test
 const firstCodePoint = 1;
 const lastCodePoint = 255;
+const strUrlToTest = "http://example.com/";
 
 const c0names = [
   "NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL", "BS",  "HT", "LF",  "VT",  "FF", "CR", "SO", "SI",
@@ -36,33 +37,70 @@ const urlPartDelimiter = {
    "hash": "#"
 };
 
+const urlPartStart = {
+   "pathname": "",
+   "search": "?",
+   "hash": "#"
+};
+
 
 function testUrlPercentEncoding(attribute) {
-  // testing object
-  var url = new URL("http://example.com/");
 
-  function codePointTest(cp) {
+  // checks url[attribute] value
+  function codePointTest_1(cp) {
     const partDelim = urlPartDelimiter[attribute];
-    const part_src = partDelim + String.fromCodePoint(cp);
+    try {
+      // parse
+      let url = new URL(strUrlToTest);
 
-    // clear
-    url[attribute] = "";
+      // set value with code point
+      const part_src = partDelim + "X" + String.fromCodePoint(cp) + "X";
+      url[attribute] = part_src;
 
-    // set & get value
-    url[attribute] = part_src;
+      // get value
+      const actual_val = url[attribute];
 
-    const actual_val = url[attribute];
+      // is percent encoded?
+      if (actual_val === part_src)
+        return 0; // no
 
-    // check is percent encoded
-    if (actual_val === part_src)
-      return 0; // does not encode
+      const part_enc = partDelim + "X" + percentEncodeCP(cp) + "X";
+      if (actual_val === part_enc)
+        return 1; // percent encoded
 
-    const part_enc = partDelim + percentEncodeCP(cp);
-    if (actual_val === part_enc)
-      return 1; // encodes
-
-    return 2; // failure
+    } catch (ex) {
+      return 3; // failure
+    }
+    return 2; // ignored/changed
   }
+
+  // checks url.href value (works with Microsoft Edge)
+  function codePointTest_2(cp) {
+    const hrefStart = strUrlToTest + urlPartStart[attribute];
+    try {
+      // parse
+      let url = new URL(strUrlToTest);
+
+      // set value with code point
+      url[attribute] = urlPartDelimiter[attribute] + "X" + String.fromCodePoint(cp) + "X";
+
+      // is percent encoded?
+      const href_src = hrefStart + "X" + String.fromCodePoint(cp) + "X";
+      if (url.href === href_src)
+        return 0; // no
+
+      const href_enc = hrefStart + "X" + percentEncodeCP(cp) + "X";
+      if (url.href === href_enc)
+        return 1; // percent encoded
+
+    } catch (ex) {
+      return 3; // failure
+    }
+    return 2; // ignored/changed
+  }
+
+  // use the test function which works with Microsoft Edge
+  const codePointTest = codePointTest_2;
 
   // output
   var strIntervals = "";
