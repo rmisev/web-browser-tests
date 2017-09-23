@@ -5,6 +5,23 @@ const lastCodePoint = 255;
 // testing object
 var url = new URL("http://example.com/#");
 
+const c0names = [
+  "NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL", "BS",  "HT", "LF",  "VT",  "FF", "CR", "SO", "SI",
+  "DLE", "DC1", "DC2", "DC3", "DC4", "NAK", "SYN", "ETB", "CAN", "EM", "SUB", "ESC", "FS", "GS", "RS", "US",
+  "SP"
+];
+
+function strCodePoint(cp) {
+  function chrCodePoint(cp) {
+    if (cp < c0names.length)
+      return c0names[cp];
+    if (cp === 0x7F)
+      return "DEL";
+    return String.fromCodePoint(cp);
+  }
+  return "0x" + cp.toString(16).toUpperCase() + "(" + chrCodePoint(cp) + ")";
+}
+
 function percentEncodeCP(cp) {
   if (cp < 0x80) {
     // encode ASCII
@@ -43,7 +60,7 @@ function testUrlFragmentPercentEncoding() {
     function addItem(delim, cp) {
       //TODO: text style by res
       strIntervals += delim;
-      strIntervals += cp.toString(16);
+      strIntervals += strCodePoint(cp);
     }
 
     // show chars which browser percent encodes
