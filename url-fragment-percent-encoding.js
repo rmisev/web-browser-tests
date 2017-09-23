@@ -3,7 +3,7 @@ const firstCodePoint = 1;
 const lastCodePoint = 255;
 
 // testing object
-var url = new URL("http://example.com/#");
+var url = new URL("http://example.com/");
 
 const c0names = [
   "NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL", "BS",  "HT", "LF",  "VT",  "FF", "CR", "SO", "SI",
@@ -33,27 +33,34 @@ function percentEncodeCP(cp) {
   }
 }
 
-function codePointTest(cp) {
-  const frag_src = "#" + String.fromCodePoint(cp);
+const urlPartDelimiter = {
+   "pathname": "/",
+   "search": "?",
+   "hash": "#"
+};
 
+function codePointTest(cp, attribute) {
+  const partDelim = urlPartDelimiter[attribute];
+  const part_src = partDelim + String.fromCodePoint(cp);
+  
   // clear
-  url.hash = "";
-
+  url[attribute] = "";
+  
   // test
-  url.hash = frag_src;
+  url[attribute] = part_src;
 
-  if (url.hash === frag_src)
+  if (url[attribute] === part_src)
     return 0; // does not encode
 
-  const frag_enc = "#" + percentEncodeCP(cp);
-  if (url.hash === frag_enc)
+  const part_enc = partDelim + percentEncodeCP(cp);
+  if (url[attribute] === part_enc)
     return 1; // encodes
 
   return 2; // failure
 }
 
 
-function testUrlFragmentPercentEncoding() {
+function testUrlPercentEncoding(attribute) {
   var strIntervals = "";
 
   function addInterval(res, cpFrom, cpTo) {
@@ -77,7 +84,7 @@ function testUrlFragmentPercentEncoding() {
   let resStart = 0;
 
   for (let cp = firstCodePoint; cp <= lastCodePoint; cp++) {
-    let res = codePointTest(cp);
+    let res = codePointTest(cp, attribute);
 
     if (resStart !== res) {
       addInterval(resStart, cpStart, cp - 1);

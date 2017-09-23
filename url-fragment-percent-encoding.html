@@ -6,14 +6,25 @@
 </head>
 <body>
 
-<p>URL-fragment percent encoding results:</p>
-<div id="text"></div>
+<h3>This browser percent encodes:</h3>
+
+<p><b>URL path:</b> <span id="pathname"></span></p>
+
+<p><b>URL query:</b> <span id="search"></span></p>
+
+<p><b>URL fragment:</b> <span id="hash"></span></p>
+
+<p><i>Testing characters in the range 0x01...0xFF</i></h3>
 
 <script>
-var text = testUrlFragmentPercentEncoding();
+function testUrlAttribute(attribute) {
+  const text = testUrlPercentEncoding(attribute);
+  document.getElementById(attribute).textContent = text;
+}
 
-document.getElementById("text").textContent = text;
-
+testUrlAttribute("pathname");
+testUrlAttribute("search");
+testUrlAttribute("hash");
 </script>
 </body>
 </html>
