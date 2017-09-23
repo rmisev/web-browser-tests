@@ -48,14 +48,17 @@ function testUrlPercentEncoding(attribute) {
     // clear
     url[attribute] = "";
 
-    // test
+    // set & get value
     url[attribute] = part_src;
 
-    if (url[attribute] === part_src)
+    const actual_val = url[attribute];
+
+    // check is percent encoded
+    if (actual_val === part_src)
       return 0; // does not encode
 
     const part_enc = partDelim + percentEncodeCP(cp);
-    if (url[attribute] === part_enc)
+    if (actual_val === part_enc)
       return 1; // encodes
 
     return 2; // failure
