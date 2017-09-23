@@ -62,6 +62,7 @@ function codePointTest(cp, attribute) {
 
 function testUrlPercentEncoding(attribute) {
   var strIntervals = "";
+  let first = true;
 
   function addInterval(res, cpFrom, cpTo) {
     function addItem(delim, cp) {
@@ -72,11 +73,12 @@ function testUrlPercentEncoding(attribute) {
 
     // show chars which browser percent encodes
     if (res === 1) {
-      addItem(" ", cpFrom);
+      addItem(first ? "" : ", ", cpFrom);
       let count = cpTo - cpFrom + 1;
       if (count >= 2) {
-        addItem(count === 2 ? " " : "...", cpTo);
+        addItem(count === 2 ? ", " : "...", cpTo);
       }
+      first = false;
     }
   }
 
