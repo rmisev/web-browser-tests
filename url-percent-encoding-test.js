@@ -2,9 +2,6 @@
 const firstCodePoint = 1;
 const lastCodePoint = 255;
 
-// testing object
-var url = new URL("http://example.com/");
-
 const c0names = [
   "NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL", "BS",  "HT", "LF",  "VT",  "FF", "CR", "SO", "SI",
   "DLE", "DC1", "DC2", "DC3", "DC4", "NAK", "SYN", "ETB", "CAN", "EM", "SUB", "ESC", "FS", "GS", "RS", "US",
@@ -39,28 +36,32 @@ const urlPartDelimiter = {
    "hash": "#"
 };
 
-function codePointTest(cp, attribute) {
-  const partDelim = urlPartDelimiter[attribute];
-  const part_src = partDelim + String.fromCodePoint(cp);
-  
-  // clear
-  url[attribute] = "";
-  
-  // test
-  url[attribute] = part_src;
-
-  if (url[attribute] === part_src)
-    return 0; // does not encode
-
-  const part_enc = partDelim + percentEncodeCP(cp);
-  if (url[attribute] === part_enc)
-    return 1; // encodes
-
-  return 2; // failure
-}
-
 
 function testUrlPercentEncoding(attribute) {
+  // testing object
+  var url = new URL("http://example.com/");
+
+  function codePointTest(cp) {
+    const partDelim = urlPartDelimiter[attribute];
+    const part_src = partDelim + String.fromCodePoint(cp);
+
+    // clear
+    url[attribute] = "";
+
+    // test
+    url[attribute] = part_src;
+
+    if (url[attribute] === part_src)
+      return 0; // does not encode
+
+    const part_enc = partDelim + percentEncodeCP(cp);
+    if (url[attribute] === part_enc)
+      return 1; // encodes
+
+    return 2; // failure
+  }
+
+  // output
   var strIntervals = "";
   let first = true;
 
@@ -82,11 +83,12 @@ function testUrlPercentEncoding(attribute) {
     }
   }
 
+  // run test
   let cpStart = firstCodePoint;
   let resStart = 0;
 
   for (let cp = firstCodePoint; cp <= lastCodePoint; cp++) {
-    let res = codePointTest(cp, attribute);
+    let res = codePointTest(cp);
 
     if (resStart !== res) {
       addInterval(resStart, cpStart, cp - 1);
