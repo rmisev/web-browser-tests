@@ -3,6 +3,8 @@ const firstCodePoint = 1;
 const lastCodePoint = 255;
 const strUrlToTest = "http://example.com/";
 
+// names of the control characters and space
+// https://tools.ietf.org/html/rfc20
 const c0names = [
   "NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL", "BS",  "HT", "LF",  "VT",  "FF", "CR", "SO", "SI",
   "DLE", "DC1", "DC2", "DC3", "DC4", "NAK", "SYN", "ETB", "CAN", "EM", "SUB", "ESC", "FS", "GS", "RS", "US",
@@ -17,7 +19,7 @@ function strCodePoint(cp) {
       return "DEL";
     return String.fromCodePoint(cp);
   }
-  return "0x" + cp.toString(16).toUpperCase() + "(" + chrCodePoint(cp) + ")";
+  return (cp < 0x10 ? "0x0" : "0x") + cp.toString(16).toUpperCase() + " (" + chrCodePoint(cp) + ")";
 }
 
 function percentEncodeCP(cp) {
@@ -43,6 +45,10 @@ const urlPartStart = {
    "hash": "#"
 };
 
+
+function testingCharsRange() {
+  return strCodePoint(firstCodePoint) + "..." + strCodePoint(lastCodePoint);
+}
 
 function testUrlPercentEncoding(attribute) {
 
@@ -77,24 +83,30 @@ function testUrlPercentEncoding(attribute) {
   }
 
   // output
-  var strIntervals = "";
-  let first = true;
+  var theIntervals = new Map();
 
   function addInterval(res, cpFrom, cpTo) {
-    function addItem(delim, cp) {
-      //TODO: text style by res
-      strIntervals += delim;
-      strIntervals += strCodePoint(cp);
+    function addItem(res, item) {
+      let arr = theIntervals.get(res);
+      if (arr) {
+        arr.push(item);
+      } else {
+        theIntervals.set(res, [item]);
+      }
     }
 
-    // show chars which browser percent encodes
-    if (res === 1) {
-      addItem(first ? "" : ", ", cpFrom);
+    if (res >= 1) {
       let count = cpTo - cpFrom + 1;
-      if (count >= 2) {
-        addItem(count === 2 ? ", " : "...", cpTo);
+      switch (count) {
+      case 2:
+        addItem(res, strCodePoint(cpFrom));
+      case 1:
+        addItem(res, strCodePoint(cpTo));
+        break;
+      default:
+        addItem(res, strCodePoint(cpFrom) + "..." + strCodePoint(cpTo));
+        break;
       }
-      first = false;
     }
   }
 
@@ -114,5 +126,5 @@ function testUrlPercentEncoding(attribute) {
   // finalize
   addInterval(resStart, cpStart, lastCodePoint);
 
-  return strIntervals;
+  return theIntervals;
 }

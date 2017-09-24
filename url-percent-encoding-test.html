@@ -6,21 +6,48 @@
 </head>
 <body>
 
-<h3>This browser percent encodes:</h3>
+<h3>Percent encoding test</h3>
+<p id="chars-range" style="font-style:italic;"></p>
 
-<p><b>URL path:</b> <span id="pathname"></span></p>
+<div><p><b>URL path</b></p><table id="pathname"></table></div>
 
-<p><b>URL query:</b> <span id="search"></span></p>
+<div><p><b>URL query</b></p><table id="search"></table></div>
 
-<p><b>URL fragment:</b> <span id="hash"></span></p>
-
-<p><i>Testing characters in the range 0x01...0xFF</i></p>
+<div><p><b>URL fragment</b></p><table id="hash"></table></div>
 
 <script>
-function testUrlAttribute(attribute) {
-  const text = testUrlPercentEncoding(attribute);
-  document.getElementById(attribute).textContent = text;
+const resultTitles = [
+  [1, "Percent encodes:"],
+  [2, "Ignores (removes):"],
+  [3, "Changes:"],
+  [4, "Error on:"],
+];
+
+function addTableRow(table, title, text) {
+  let row = table.insertRow();
+  let titleCell = row.insertCell();
+  let textCell = row.insertCell();
+  titleCell.appendChild(document.createTextNode(title));
+  titleCell.style.cssText = "font-weight:bold;";
+  textCell.appendChild(document.createTextNode(text));
 }
+
+function testUrlAttribute(attribute) {
+  let table = document.getElementById(attribute);
+
+  const result = testUrlPercentEncoding(attribute);
+  for (let i = 0; i < resultTitles.length; i++) {
+    let resTitle = resultTitles[i];
+    if (resTitle[0] === 1 || result.has(resTitle[0])) {
+      let text = result.has(resTitle[0]) ?
+        result.get(resTitle[0]).join(", ") :
+        "-";
+      addTableRow(table, resTitle[1], text);
+    }
+  }
+}
+
+document.getElementById("chars-range").textContent = "Testing characters in the range " + testingCharsRange();
 
 testUrlAttribute("pathname");
 testUrlAttribute("search");
