@@ -46,36 +46,8 @@ const urlPartStart = {
 
 function testUrlPercentEncoding(attribute) {
 
-  // checks url[attribute] value
-  function codePointTest_1(cp) {
-    const partDelim = urlPartDelimiter[attribute];
-    try {
-      // parse
-      let url = new URL(strUrlToTest);
-
-      // set value with code point
-      const part_src = partDelim + "X" + String.fromCodePoint(cp) + "X";
-      url[attribute] = part_src;
-
-      // get value
-      const actual_val = url[attribute];
-
-      // is percent encoded?
-      if (actual_val === part_src)
-        return 0; // no
-
-      const part_enc = partDelim + "X" + percentEncodeCP(cp) + "X";
-      if (actual_val === part_enc)
-        return 1; // percent encoded
-
-    } catch (ex) {
-      return 3; // failure
-    }
-    return 2; // ignored/changed
-  }
-
-  // checks url.href value (works with Microsoft Edge)
-  function codePointTest_2(cp) {
+  // checks url.href value
+  function codePointTest(cp) {
     const hrefStart = strUrlToTest + urlPartStart[attribute];
     try {
       // parse
@@ -84,23 +56,25 @@ function testUrlPercentEncoding(attribute) {
       // set value with code point
       url[attribute] = urlPartDelimiter[attribute] + "X" + String.fromCodePoint(cp) + "X";
 
-      // is percent encoded?
-      const href_src = hrefStart + "X" + String.fromCodePoint(cp) + "X";
-      if (url.href === href_src)
-        return 0; // no
+      // extract char value from the url
+      if (url.href.startsWith(hrefStart + "X") && url.href.endsWith("X")) {
+        const actual_val = url.href.substring(hrefStart.length + 1, url.href.length - 1);
 
-      const href_enc = hrefStart + "X" + percentEncodeCP(cp) + "X";
-      if (url.href === href_enc)
-        return 1; // percent encoded
+        // is percent encoded?
+        if (actual_val === String.fromCodePoint(cp))
+          return 0; // no
 
+        if (actual_val === percentEncodeCP(cp))
+          return 1; // percent encoded
+
+        if (actual_val.length === 0)
+          return 2; // ignored
+      }
     } catch (ex) {
-      return 3; // failure
+      return 4; // failure
     }
-    return 2; // ignored/changed
+    return 3; // changed
   }
-
-  // use the test function which works with Microsoft Edge
-  const codePointTest = codePointTest_2;
 
   // output
   var strIntervals = "";
