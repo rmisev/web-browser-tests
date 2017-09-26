@@ -1,5 +1,5 @@
 // code points to test
-const firstCodePoint = 1;
+const firstCodePoint = 0;
 const lastCodePoint = 255;
 const strUrlToTest = "http://example.com/";
 
@@ -55,31 +55,41 @@ function testUrlPercentEncoding(attribute) {
   // checks url.href value
   function codePointTest(cp) {
     const hrefStart = strUrlToTest + urlPartStart[attribute];
+    const prefixCh = "X";
+    const endingCh = "Y";
     try {
       // parse
       let url = new URL(strUrlToTest);
 
       // set value with code point
-      url[attribute] = urlPartDelimiter[attribute] + "X" + String.fromCodePoint(cp) + "X";
+      url[attribute] = urlPartDelimiter[attribute] +
+        prefixCh + String.fromCodePoint(cp) + endingCh;
 
-      // extract char value from the url
-      if (url.href.startsWith(hrefStart + "X") && url.href.endsWith("X")) {
-        const actual_val = url.href.substring(hrefStart.length + 1, url.href.length - 1);
+      // check the url.href value
+      if (url.href.startsWith(hrefStart + prefixCh)) {
+        if (url.href.length === hrefStart.length + 1) {
+          return 4; // stopped on char
+        } else if (url.href.endsWith(endingCh)) {
+          // extract char value from the url
+          const actual_val = url.href.substring(hrefStart.length + 1, url.href.length - 1);
 
-        // is percent encoded?
-        if (actual_val === String.fromCodePoint(cp))
-          return 0; // no
+          // is percent encoded?
+          if (actual_val === String.fromCodePoint(cp))
+            return 0; // no
 
-        if (actual_val === percentEncodeCP(cp))
-          return 1; // percent encoded
+          if (actual_val === percentEncodeCP(cp))
+            return 1; // percent encoded
 
-        if (actual_val.length === 0)
-          return 2; // ignored
+          if (actual_val.length === 0)
+            return 2; // ignored
+
+          return 3; // changed
+        }
       }
     } catch (ex) {
-      return 4; // failure
+      return 5; // failure
     }
-    return 3; // changed
+    return 6; // unknown
   }
 
   // output
