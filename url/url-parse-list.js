@@ -1,6 +1,8 @@
 // Parses URLs from the list and shows parsing results in a table
 
 (function() {
+  const reIsName = /^[a-zA-Z0-9][a-zA-Z0-9\-_]*$/;
+
   function parseUrl(src, properties) {
     // parse src
     let url;
@@ -63,15 +65,27 @@
     }
   }
 
-  var xhr = new XMLHttpRequest();
-  xhr.overrideMimeType("application/json");
-  xhr.open("GET", "url-parse-data/idna-empty-host.json", true);
-  xhr.onreadystatechange = function () {
-    if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-      let obj = JSON.parse(xhr.responseText);
-      runTests(obj);
+  // get test name
+  function getTestName() {
+    if (location.hash) {
+      const name = location.hash.substring(1);
+      if (reIsName.test(name)) return name;
     }
-  };
-  xhr.send();
+    return null;
+  }
+
+  var testName = getTestName();
+  if (testName) {
+    var xhr = new XMLHttpRequest();
+    xhr.overrideMimeType("application/json");
+    xhr.open("GET", "url-parse-data/" + testName + ".json", true);
+    xhr.onreadystatechange = function () {
+      if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+        let obj = JSON.parse(xhr.responseText);
+        runTests(obj);
+      }
+    };
+    xhr.send();
+  }
 
 })();
