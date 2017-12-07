@@ -1,0 +1,10 @@
+{
+  "url_list": [
+    "https://example.com/#abc\u0000xyz",
+    "https://example.com/pa-\u0000-th/",
+    "https://example.x\u0000y.com/",
+    "file://example.com/#abc\u0000xyz",
+    "non-spec://example.com/#abc\u0000xyz"
+  ],
+  "url_properties": [ "href", "hostname", "pathname", "hash" ]
+}
