@@ -1,0 +1,13 @@
+{
+  "url_list": [
+    "http://host/path",
+    "http://xn--/path",
+    "http://\u00ad/path",
+    "http://%C2%AD/path",
+    "file://host/path",
+    "file://xn--/path",
+    "file://\u00ad/path",
+    "file://%C2%AD/path"
+  ],
+  "url_properties": [ "href", "hostname" ]
+}

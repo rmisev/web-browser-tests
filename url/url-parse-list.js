@@ -1,18 +1,6 @@
 // Parses URLs from the list and shows parsing results in a table
 
 (function() {
-  const url_list = [
-    "http://host/path",
-    "http://xn--/path",
-    "http://\u00ad/path",
-    "http://%C2%AD/path",
-    "file://host/path",
-    "file://xn--/path",
-    "file://\u00ad/path",
-    "file://%C2%AD/path",
-  ];
-  const url_properties = [ "href", "hostname" ];
-
   function parseUrl(src, properties) {
     // parse src
     let url;
@@ -60,17 +48,30 @@
     }
   }
 
-  let div = document.getElementById("results");
-  let table = document.createElement("table");
-  div.appendChild(table);
+  function runTests({url_list, url_properties}) {
+    let div = document.getElementById("results");
+    let table = document.createElement("table");
+    div.appendChild(table);
 
-  addTableHead(table, url_properties);
-  let tbody = table.createTBody();
-  for (var j = 0; j < url_list.length; j++) {
-    var src = url_list[j];
-    var res = parseUrl(src, url_properties);
-    if (res)
-      addTableRow(tbody, url_properties, res);
+    addTableHead(table, url_properties);
+    let tbody = table.createTBody();
+    for (var j = 0; j < url_list.length; j++) {
+      var src = url_list[j];
+      var res = parseUrl(src, url_properties);
+      if (res)
+        addTableRow(tbody, url_properties, res);
+    }
   }
+
+  var xhr = new XMLHttpRequest();
+  xhr.overrideMimeType("application/json");
+  xhr.open("GET", "url-parse-data/idna-empty-host.json", true);
+  xhr.onreadystatechange = function () {
+    if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+      let obj = JSON.parse(xhr.responseText);
+      runTests(obj);
+    }
+  };
+  xhr.send();
 
 })();
