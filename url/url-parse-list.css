@@ -1,0 +1,14 @@
+table {
+  border-collapse: collapse;
+  border-bottom: solid;
+}
+td, th {
+  padding: .2em;
+  border-top: none;
+  border-bottom: solid thin;
+  border-left: solid;
+  border-right: none;
+}
+td:first-child, th:first-child {
+  border-left: none;
+}
