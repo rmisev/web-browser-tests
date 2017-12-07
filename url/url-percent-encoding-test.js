@@ -45,12 +45,23 @@ const urlPartStart = {
    "hash": "#"
 };
 
+var elemA = document.createElement('a');
+const mapCreateURL = {
+  "A": function(strUrl) {
+    elemA.href = strUrl;
+    return elemA;
+  },
+  "URL": function(strUrl) {
+    return new URL(strUrl);
+  }
+};
+
 
 function testingCharsRange() {
   return strCodePoint(firstCodePoint) + "..." + strCodePoint(lastCodePoint);
 }
 
-function testUrlPercentEncoding(attribute) {
+function testUrlPercentEncoding(attribute, method) {
 
   // checks url.href value
   function codePointTest(cp) {
@@ -59,7 +70,7 @@ function testUrlPercentEncoding(attribute) {
     const endingCh = "Y";
     try {
       // parse
-      let url = new URL(strUrlToTest);
+      let url = mapCreateURL[method](strUrlToTest);
 
       // set value with code point
       url[attribute] = urlPartDelimiter[attribute] +
