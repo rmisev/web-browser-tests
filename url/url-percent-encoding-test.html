@@ -13,6 +13,10 @@
   <option value="A">&lt;a&gt; element</option>
   <option value="URL">URL object</option>
 </select></p>
+<p>URL to test: <select id="testUrl">
+  <option value="http://example.com/">http://example.com/</option>
+  <option value="non-special://example.com/">non-special://example.com/</option>
+</select></p>
 
 <p id="chars-range" style="font-style:italic;"></p>
 
@@ -47,10 +51,10 @@ function clearResults(attribute) {
     table.removeChild(table.tBodies[n - 1]);
 }
 
-function testUrlAttribute(attribute, method) {
+function testUrlAttribute(attribute, method, testUrl) {
   let table = document.getElementById(attribute);
 
-  const result = testUrlPercentEncoding(attribute, method);
+  const result = testUrlPercentEncoding(attribute, method, testUrl);
   for (let i = 0; i < resultTitles.length; i++) {
     let resTitle = resultTitles[i];
     if (resTitle[0] === 1 || result.has(resTitle[0])) {
@@ -62,23 +66,25 @@ function testUrlAttribute(attribute, method) {
   }
 }
 
-function runTests(method) {
+function runTests() {
+  let method = document.getElementById("method").value;
+  let testUrl = document.getElementById("testUrl").value;
+
   clearResults("pathname");
   clearResults("search");
   clearResults("hash");
 
-  testUrlAttribute("pathname", method);
-  testUrlAttribute("search", method);
-  testUrlAttribute("hash", method);
+  testUrlAttribute("pathname", method, testUrl);
+  testUrlAttribute("search", method, testUrl);
+  testUrlAttribute("hash", method, testUrl);
 }
 
 // MAIN //
 document.getElementById("chars-range").textContent = "Testing characters in the range " + testingCharsRange();
-document.getElementById("method").addEventListener("change", function(event) {
-  runTests(event.target.value);
-}, false);
+document.getElementById("method").addEventListener("change", runTests, false);
+document.getElementById("testUrl").addEventListener("change", runTests, false);
 
-runTests(document.getElementById("method").value);
+runTests();
 
 </script>
 </body>

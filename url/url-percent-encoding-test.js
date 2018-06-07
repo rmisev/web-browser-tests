@@ -61,16 +61,17 @@ function testingCharsRange() {
   return strCodePoint(firstCodePoint) + "..." + strCodePoint(lastCodePoint);
 }
 
-function testUrlPercentEncoding(attribute, method) {
+function testUrlPercentEncoding(attribute, method, testUrl) {
+  if (!testUrl) testUrl = strUrlToTest;
 
   // checks url.href value
   function codePointTest(cp) {
-    const hrefStart = strUrlToTest + urlPartStart[attribute];
+    const hrefStart = testUrl + urlPartStart[attribute];
     const prefixCh = "X";
     const endingCh = "Y";
     try {
       // parse
-      let url = mapCreateURL[method](strUrlToTest);
+      let url = mapCreateURL[method](testUrl);
 
       // set value with code point
       url[attribute] = urlPartDelimiter[attribute] +
